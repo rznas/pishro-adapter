@@ -1,6 +1,5 @@
 import base64
-import subprocess
-import time
+import datetime
 
 import cv2
 import numpy as np
@@ -9,9 +8,8 @@ import requests
 from lightstreamer.client import *
 
 from src import settings
-from src.models import Singleton
 from src.adapters.lightstreamer_adapter import JsServerAdapter
-
+from src.models import Singleton
 
 
 class PishroAdapter(metaclass=Singleton):
@@ -139,10 +137,7 @@ class PishroAdapter(metaclass=Singleton):
         )
 
     def edit_order(
-        self,
-        order_id: int,
-        symbol: str, count: int, price: int, is_buy=True
-
+        self, order_id: int, symbol: str, count: int, price: int, is_buy=True
     ):
         data = {
             "orderCount": count,
@@ -156,22 +151,22 @@ class PishroAdapter(metaclass=Singleton):
             "orderValidity": 74,
             "orderValiditydate": None,
             "shortSellIsEnabled": False,
-            "shortSellIncentivePercent": 0
+            "shortSellIncentivePercent": 0,
         }
-        
+
         res = self.send_request("post", settings.EDIT_ORDER_ENDPOINT, json=data)
         if res.get("IsSuccessfull", False):
             return True
         raise Exception(
             res.get("MessageDesc", f"Order edit failed! {symbol},{count},{price}")
         )
-    
+
     def remaining_assets(
         self,
         symbol: str,
     ):
         params = {"isin": symbol.upper()}
-        
+
         res = self.send_request("get", settings.REMAINING_ASSET_ENDPOINT, params=params)
         if res.get("IsSuccessfull", False):
             return res.get("Data")
@@ -215,25 +210,51 @@ class PishroAdapter(metaclass=Singleton):
             # ]
 
         return None
-    
 
     def delete_order(
         self,
         order_id: int,
-
     ):
         data = [str(order_id)]
-        
+
         res = self.send_request("post", settings.DELETE_ORDER_ENDPOINT, json=data)
         if res.get("IsSuccessfull", False):
             if res_data := res.get("Data", {}):
-                    if res_data.get("SuccessCancel"):
-                        return True
+                if res_data.get("SuccessCancel"):
+                    return True
             return True
-        raise Exception(
-            res.get("MessageDesc", f"Order delete failed! {order_id}")
-        )
+        raise Exception(res.get("MessageDesc", f"Order delete failed! {order_id}"))
 
+    def price_ohlc(
+        self,
+        symbol: str,
+        resolution: str,
+        time_from: datetime.datetime,
+        time_to: datetime.datetime,
+    ):
+        params = {
+            "symbol": symbol.upper(),
+            "resolution": resolution,
+            "from": int(time_from.timestamp()),
+            "to": int(time_to.timestamp()),
+        }
+
+        res = self.send_request("get", settings.PRICE_OHLC_ENDPOINT, params=params)
+        all_data = []
+        if res.get("s", "ok"):
+            for d in zip(
+                res.get("t", []),
+                res.get("o", []),
+                res.get("h", []),
+                res.get("l", []),
+                res.get("c", []),
+                res.get("v", []),
+            ):
+                data_time = datetime.datetime.fromtimestamp(float(d.pop(0)))
+                all_data.append([data_time, *d])
+            return all_data
+
+        raise Exception(res.get("s", f"Price ohlc failed!"))
 
     @staticmethod
     def handle_response(res):

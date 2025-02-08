@@ -13,11 +13,10 @@ EDIT_ORDER_ENDPOINT =  os.getenv("EDIT_ORDER_ENDPOINT", "https://api.pishrobroke
 DELETE_ORDER_ENDPOINT =  os.getenv("DELETE_ORDER_ENDPOINT", "https://api.pishrobroker.ir/Web/V1/Order/Delete")
 OPEN_ORDERS_ENDPOINT =  os.getenv("OPEN_ORDERS_ENDPOINT", "https://api.pishrobroker.ir/Web/V1/Order/GetOpenOrder/OpenOrder")
 REMAINING_ASSET_ENDPOINT =  os.getenv("REMAINING_ASSET_ENDPOINT", "https://api.pishrobroker.ir/Web/V1/DailyPortfolio/GetRemainAsset/GetRemainAsset")
-
-GET_TRADES_ENDPOINT = os.getenv("GET_TRADES_ENDPOINT", "")
+PRICE_OHLC_ENDPOINT =  os.getenv("PRICE_OHLC_ENDPOINT", "https://api.pishrobroker.ir/Web/V1/DailyPortfolio/GetRemainAsset/GetRemainAsset")
+GET_TRADES_ENDPOINT = os.getenv("GET_TRADES_ENDPOINT", "https://rlcchartapi.tadbirrlc.ir/ChartData/history")
 
 LIGHTSTREAMER_ENDPOINT = os.getenv("LIGHTSTREAMER_ENDPOINT")
 BROKER_ID = os.getenv("BROKER_ID")
 JS_SERVER_FILE_PATH = "js/src/main.js"
 JS_SERVER_PORT = 3000
-
