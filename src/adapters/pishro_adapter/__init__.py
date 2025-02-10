@@ -8,7 +8,7 @@ import requests
 from lightstreamer.client import *
 
 from src import settings
-from src.adapters.lightstreamer_adapter import JsServerAdapter
+from src.adapters.js_server_adapter import JsServerAdapter
 from src.models import Singleton
 
 
@@ -46,11 +46,16 @@ class PishroAdapter(metaclass=Singleton):
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
                 image = cv2.dilate(image, np.ones((2, 2), np.uint8))
                 image = cv2.erode(image, np.ones((2, 2), np.uint8))
+                alpha = 1.7  # Contrast factor
+                beta = 0     # No brightness change
+                image = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
                 text = pytesseract.image_to_string(
                     image, config="--psm 6"
                 )  # Adjust psm mode if needed
                 try:
                     captcha_code = int(text.replace(" ", "").replace("\n", ""))
+                    if len(captcha_code) != 4:
+                        captcha_code = None
                 except:
                     pass
             data = {
@@ -225,7 +230,7 @@ class PishroAdapter(metaclass=Singleton):
             return True
         raise Exception(res.get("MessageDesc", f"Order delete failed! {order_id}"))
 
-    def price_ohlc(
+    def price_ohlcv(
         self,
         symbol: str,
         resolution: str,

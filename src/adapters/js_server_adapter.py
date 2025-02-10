@@ -20,16 +20,17 @@ class JsServerAdapter(metaclass=Singleton):
         self.js_server_process = None
         self.start_server()
         if not self.init_server():
+            self.stop_server()
             raise Exception("init failed")
 
     def init_server(self):
         data = {
-            "userName": self.user_name,
+            "userName": f"{settings.BROKER_ID}&{self.user_name}",
             "passWord": self.ls_token,
             "serverAddress": settings.LIGHTSTREAMER_ENDPOINT,
             "adapterSet": "STOCKLISTDEMO_REMOTE",
         }
-        _, status_code = self.send_request("post", "init", json=data)
+        _, status_code = self.send_request("post", "init", json=data, headers={"Content-Type": "application/json"})
         return status_code == 200
 
     def start_server(self):
@@ -39,7 +40,7 @@ class JsServerAdapter(metaclass=Singleton):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        time.sleep(2)  # Allow some time for the server to start
+        time.sleep(2)
         print("Server started.")
 
     def stop_server(self):
@@ -49,20 +50,20 @@ class JsServerAdapter(metaclass=Singleton):
         print("Server stopped.")
 
     def subscribe_market_index(self):
-        data, status_code = self.send_request("post", "/subscribe/market-index")
+        data, status_code = self.send_request("post", "subscribe/market-index")
         if status_code == 500:
             raise Exception(data)
         return status_code == 200
 
     def subscribe_stock(self, stocks: Sequence[str]):
-        data, status_code = self.send_request("post", "/subscribe/stock", json=stocks)
+        data, status_code = self.send_request("post", "subscribe/stock", json=stocks)
         if status_code == 500:
             raise Exception(data)
         return status_code == 200
 
     def subscribe_stock_details(self, stocks: Sequence[str]):
         data, status_code = self.send_request(
-            "post", "/subscribe/stock-details", json=stocks
+            "post", "subscribe/stock-details", json=stocks
         )
         if status_code == 500:
             raise Exception(data)
@@ -70,8 +71,14 @@ class JsServerAdapter(metaclass=Singleton):
 
     def subscribe_market_depth(self, stocks: Sequence[str]):
         data, status_code = self.send_request(
-            "post", "/subscribe/market-depth", json=stocks
+            "post", "subscribe/market-depth", json=stocks
         )
+        if status_code == 500:
+            raise Exception(data)
+        return status_code == 200
+
+    def subscribe_stock_queue(self, stocks: Sequence[str]):
+        data, status_code = self.send_request("post", "subscribe/stock-queue", json={"stocks": stocks})
         if status_code == 500:
             raise Exception(data)
         return status_code == 200
@@ -86,20 +93,18 @@ class JsServerAdapter(metaclass=Singleton):
         return {}
 
     def send_request(
-        self,
-        method,
-        endpoint_relative,
-        json=None,
-        data=None,
-        files=None,
-        params=None,
-        headers=None,
+            self,
+            method,
+            endpoint_relative,
+            json=None,
+            data=None,
+            files=None,
+            params=None,
+            headers=None,
     ):
         endpoint = os.path.join(
             f"http://localhost:{settings.JS_SERVER_PORT}", endpoint_relative
         )
-        res = self.sess.request(
-            method, endpoint, params, data, headers, files=files, json=json
-        )
+        res = self.sess.request(method, endpoint, params, data, headers, files=files, json=json)
         res_data = self.handle_response(res)
         return res_data, res.status_code

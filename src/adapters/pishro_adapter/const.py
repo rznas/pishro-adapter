@@ -116,23 +116,23 @@ class PishroApiWebUrl(Enum):
 
 
 class OrderStatus(Enum):
-    partiallyexecutionandexpired = "قسمتی از سفارش انجام و منقضی شد",
-    partiallyexecution = "قسمتی از سفارش انجام شد",
-    partiallyexcutionandexpired = "قسمتی از سفارش انجام و منقضی شد",
-    partiallyexcution = "بخشی از سفارش انجام شد",
-    orderexecuted = "سفارش اجرا شد",
-    onmodifyboard = "ثبت در سیستم معاملات(ویرایش شده)",
-    onmodify = "درحال ویرایش",
-    oncancelerror = "خطا! حذف سفارش انجام نشد",
-    onboard = "ثبت در سیستم معاملات",
-    modify = "ویرایش",
-    inomsqueue = "ارسال به کارگزاری",
-    freeze = "سفارش شما ثبت شد.در انتظار پایان دوره پذیره نویسی ",
-    expired = "سفارش منقضی شد",
-    error = "خطا",
-    done = "سفارش بصورت کامل انجام شد",
-    delete = "حذف ",
-    cancel = "سفارش از سیستم حذف شد",
+    partiallyexecutionandexpired = "قسمتی از سفارش انجام و منقضی شد"
+    partiallyexecution = "قسمتی از سفارش انجام شد"
+    partiallyexcutionandexpired = "قسمتی از سفارش انجام و منقضی شد"
+    partiallyexcution = "بخشی از سفارش انجام شد"
+    orderexecuted = "سفارش اجرا شد"
+    onmodifyboard = "ثبت در سیستم معاملات(ویرایش شده)"
+    onmodify = "درحال ویرایش"
+    oncancelerror = "خطا! حذف سفارش انجام نشد"
+    onboard = "ثبت در سیستم معاملات"
+    modify = "ویرایش"
+    inomsqueue = "ارسال به کارگزاری"
+    freeze = "سفارش شما ثبت شد.در انتظار پایان دوره پذیره نویسی "
+    expired = "سفارش منقضی شد"
+    error = "خطا"
+    done = "سفارش بصورت کامل انجام شد"
+    delete = "حذف "
+    cancel = "سفارش از سیستم حذف شد"
 
 class OrderSides(Enum):
     BUY = "خرید"
