@@ -19,3 +19,4 @@ LIGHTSTREAMER_ENDPOINT = os.getenv("LIGHTSTREAMER_ENDPOINT")
 BROKER_ID = os.getenv("BROKER_ID", "181")
 JS_SERVER_FILE_PATH = "src/js/src/main.js"
 JS_SERVER_PORT = 3000
+REDIS_ENDPOINT = os.getenv("REDIS_ENDPOINT", "redis://localhost:6379/0")

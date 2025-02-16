@@ -3,6 +3,7 @@ from sanic.request import Request
 from sanic.response import json
 
 from src import settings
+from src.adapters.data_adapter import DataAdapter
 from src.adapters.pishro_adapter import PishroAdapter
 
 app = Sanic("MarketIndexApp")
@@ -88,4 +89,11 @@ async def market_depth(request: Request):
 
 # Run the app
 if __name__ == "__main__":
+    myvar = "1"
+    data = DataAdapter()
+    data.set("myvar", myvar)
+    data.set_pickle("myvar", myvar)
+
     app.run(host="0.0.0.0", port=8000)
+
+
